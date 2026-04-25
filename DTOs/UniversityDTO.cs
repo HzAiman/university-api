@@ -41,6 +41,19 @@ public class CourseReadDto
     public int DepartmentId { get; set; }
 }
 
+public class CourseUpdateDto
+{
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
+    public required string Title { get; set; } = null!;
+
+    [Range(1, 5, ErrorMessage = "Credits must be between 1 and 5")]
+    public int Credits { get; set; }
+
+    [Required]
+    public int? DepartmentId { get; set; }
+}
+
 public class StudentReadDto
 {
     public int Id { get; set; }

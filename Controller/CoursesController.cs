@@ -22,6 +22,12 @@ public class CoursesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CourseReadDto>> PostCourse(CourseCreateDto courseDto)
     {
+        var departmentExists = await _context.Departments.AnyAsync(d => d.Id == courseDto.DepartmentId);
+
+        if (!departmentExists)
+        {
+            return BadRequest("Invalid department ID.");
+        }
         // Map DTO to Model
         var course = new Course
         {
@@ -32,6 +38,7 @@ public class CoursesController : ControllerBase
 
         _context.Courses.Add(course);
         await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, new CourseReadDto
         {
             Id = course.Id,
@@ -57,6 +64,30 @@ public class CoursesController : ControllerBase
             Credits = course.Credits,
             DepartmentId = course.DepartmentId
         });
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateCourse(int id, CourseUpdateDto courseDto)
+    {
+        var course = await _context.Courses.FindAsync(id);
+        if (course == null)
+        {
+            return NotFound();
+        }
+
+        var departmentExists = await _context.Departments.AnyAsync(d => d.Id == courseDto.DepartmentId);
+        if (!departmentExists)
+        {
+            return BadRequest("Target department does not exist.");
+        }
+
+        course.Title = courseDto.Title;
+        course.Credits = courseDto.Credits;
+        course.DepartmentId = courseDto.DepartmentId!.Value;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
     // Filter courses
