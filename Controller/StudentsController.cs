@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
 using UniversityApi.Data;
-using UniveersityApi.DTOs;
+using UniversityApi.DTOs;
 
 namespace UniversityApi.Controllers;
 

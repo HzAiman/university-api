@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace UniveersityApi.DTOs;
+namespace UniversityApi.DTOs;
 
 public class DepartmentDto
 {
