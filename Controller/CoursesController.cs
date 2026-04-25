@@ -20,19 +20,25 @@ public class CoursesController : ControllerBase
 
     // Create a new course
     [HttpPost]
-    public async Task<ActionResult<Course>> PostCourse(CourseCreateDto courseDto)
+    public async Task<ActionResult<CourseReadDto>> PostCourse(CourseCreateDto courseDto)
     {
         // Map DTO to Model
         var course = new Course
         {
             Title = courseDto.Title,
             Credits = courseDto.Credits,
-            DepartmentId = courseDto.DepartmentId.GetValueOrDefault()
+            DepartmentId = courseDto.DepartmentId!.Value
         };
 
         _context.Courses.Add(course);
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, course);
+        return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, new CourseReadDto
+        {
+            Id = course.Id,
+            Title = course.Title,
+            Credits = course.Credits,
+            DepartmentId = course.DepartmentId
+        });
     }
 
     // Get a course by ID
