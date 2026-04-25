@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
 using UniversityApi.Data;
 using UniversityApi.DTOs;
+using AutoMapper;
 
 namespace UniversityApi.Controllers;
 
@@ -12,9 +13,12 @@ namespace UniversityApi.Controllers;
 public class StudentsController : ControllerBase
 {
     private readonly UniversityContext _context;
-    public StudentsController(UniversityContext context)
+    private readonly IMapper _mapper;
+
+    public StudentsController(UniversityContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     // Enroll a student in a course
@@ -88,22 +92,12 @@ public class StudentsController : ControllerBase
         }
 
         // Map DTO to Model
-        var student = new Student 
-        {
-            Name = studentDto.Name,
-            Email = studentDto.Email
-        };
+        var student = _mapper.Map<Student>(studentDto);
 
         _context.Students.Add(student);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, 
-            new StudentReadDto 
-            {
-                Id = student.Id,
-                Name = student.Name,
-                Email = student.Email
-            });
+        return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, _mapper.Map<StudentReadDto>(student));
     }
 
     // Get a student by ID (used for CreatedAtAction in PostStudent)
@@ -115,12 +109,7 @@ public class StudentsController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(new StudentReadDto
-        {
-            Id = student.Id,
-            Name = student.Name,
-            Email = student.Email
-        });
+        return Ok(_mapper.Map<StudentReadDto>(student));
     }
 
     [HttpPut("{id}")]
@@ -132,7 +121,7 @@ public class StudentsController : ControllerBase
             return NotFound();
         }
 
-        student.Name = studentDto.Name;
+        _mapper.Map(studentDto, student);
         await _context.SaveChangesAsync();
 
         return NoContent();
