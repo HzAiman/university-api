@@ -78,7 +78,7 @@ public class StudentsController : ControllerBase
 
     // Create a new student
     [HttpPost]
-    public async Task<ActionResult<Student>> PostStudent(StudentCreateDto studentDto)
+    public async Task<ActionResult<StudentReadDto>> PostStudent(StudentCreateDto studentDto)
     {
         // Check if email already exists
         var emailExists = await _context.Students.AnyAsync(s => s.Email == studentDto.Email);
@@ -97,18 +97,59 @@ public class StudentsController : ControllerBase
         _context.Students.Add(student);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetStudentSchedule), new { studentId = student.Id }, student);
+        return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, 
+            new StudentReadDto 
+            {
+                Id = student.Id,
+                Name = student.Name,
+                Email = student.Email
+            });
     }
 
     // Get a student by ID (used for CreatedAtAction in PostStudent)
     [HttpGet("{id}")]
-    public async Task<ActionResult<Student>> GetStudent(int id)
+    public async Task<ActionResult<StudentReadDto>> GetStudent(int id)
     {
         var student = await _context.Students.FindAsync(id);
         if (student == null)
         {
             return NotFound();
         }
-        return Ok(student);
+        return Ok(new StudentReadDto
+        {
+            Id = student.Id,
+            Name = student.Name,
+            Email = student.Email
+        });
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateStudent(int id, StudentUpdateDto studentDto)
+    {
+        var student = await _context.Students.FindAsync(id);
+        if (student == null)
+        {
+            return NotFound();
+        }
+
+        student.Name = studentDto.Name;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteStudent(int id)
+    {
+        var student = await _context.Students.FindAsync(id);
+        if (student == null)
+        {
+            return NotFound();
+        }
+
+        _context.Students.Remove(student);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }

@@ -40,3 +40,16 @@ public class CourseReadDto
     public int Credits { get; set; }
     public int DepartmentId { get; set; }
 }
+
+public class StudentReadDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string Email { get; set; } = null!;
+}
+
+public class StudentUpdateDto
+{
+    [Required]
+    public string Name { get; set; } = null!;
+}
