@@ -4,6 +4,7 @@ using UniversityApi.Models;
 using UniversityApi.Data;
 using UniversityApi.DTOs;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 namespace UniversityApi.Controllers;
 
@@ -97,6 +98,6 @@ public class CoursesController : ControllerBase
             query = query.Where(c => c.Credits <= maxCredits.Value);
         }
 
-        return await query.Select(c => _mapper.Map<CourseReadDto>(c)).ToListAsync();
+        return await query.ProjectTo<CourseReadDto>(_mapper.ConfigurationProvider).ToListAsync();
     }
 }
