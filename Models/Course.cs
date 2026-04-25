@@ -8,7 +8,4 @@ public class Course
 
     // Foreign key to the Department
     public int DepartmentId { get; set; }
-
-    // See the Department object from the Course
-    public Department? Department { get; set; }
 }

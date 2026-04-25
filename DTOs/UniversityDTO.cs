@@ -5,9 +5,6 @@ namespace UniveersityApi.DTOs;
 public class DepartmentDto
 {
     [Required]
-    public int Id { get; set; }
-
-    [Required]
     [StringLength(100, MinimumLength = 3)]
     public required string Name { get; set; }
 }
@@ -27,6 +24,11 @@ public class CourseCreateDto
 
 public class StudentCreateDto
 {
+    [Required]
+    [StringLength(100, MinimumLength = 3)]
     public required string Name { get; set; }
+
+    [Required]
+    [EmailAddress]
     public required string Email { get; set; }
 }
