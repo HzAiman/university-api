@@ -19,7 +19,7 @@ public class CourseCreateDto
     public int Credits { get; set; }
 
     [Required]
-    public int DepartmentId { get; set; }
+    public int? DepartmentId { get; set; }
 }
 
 public class StudentCreateDto
@@ -31,4 +31,12 @@ public class StudentCreateDto
     [Required]
     [EmailAddress]
     public required string Email { get; set; }
+}
+
+public class CourseReadDto
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = null!;
+    public int Credits { get; set; }
+    public int DepartmentId { get; set; }
 }
