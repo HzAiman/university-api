@@ -31,7 +31,6 @@ public class DepartmentController : ControllerBase
     {
         var department = new Department
         {
-            Id = departmentDto.Id,
             Name = departmentDto.Name
         };
         
