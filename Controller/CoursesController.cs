@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversityApi.Models;
 using UniversityApi.Data;
 using UniversityApi.DTOs;
+using AutoMapper;
 
 namespace UniversityApi.Controllers;
 
@@ -12,10 +13,12 @@ namespace UniversityApi.Controllers;
 public class CoursesController : ControllerBase
 {
     private readonly UniversityContext _context;
+    private readonly IMapper _mapper;
 
-    public CoursesController(UniversityContext context)
+    public CoursesController(UniversityContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     // Create a new course
@@ -29,23 +32,12 @@ public class CoursesController : ControllerBase
             return BadRequest("Invalid department ID.");
         }
         // Map DTO to Model
-        var course = new Course
-        {
-            Title = courseDto.Title,
-            Credits = courseDto.Credits,
-            DepartmentId = courseDto.DepartmentId!.Value
-        };
+        var course = _mapper.Map<Course>(courseDto);
 
         _context.Courses.Add(course);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, new CourseReadDto
-        {
-            Id = course.Id,
-            Title = course.Title,
-            Credits = course.Credits,
-            DepartmentId = course.DepartmentId
-        });
+        return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, _mapper.Map<CourseReadDto>(course));
     }
 
     // Get a course by ID
@@ -57,13 +49,7 @@ public class CoursesController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(new CourseReadDto
-        {
-            Id = course.Id,
-            Title = course.Title,
-            Credits = course.Credits,
-            DepartmentId = course.DepartmentId
-        });
+        return Ok(_mapper.Map<CourseReadDto>(course));
     }
 
     [HttpPut("{id}")]
@@ -81,10 +67,7 @@ public class CoursesController : ControllerBase
             return BadRequest("Target department does not exist.");
         }
 
-        course.Title = courseDto.Title;
-        course.Credits = courseDto.Credits;
-        course.DepartmentId = courseDto.DepartmentId!.Value;
-
+        _mapper.Map(courseDto, course);
         await _context.SaveChangesAsync();
 
         return NoContent();
@@ -114,12 +97,6 @@ public class CoursesController : ControllerBase
             query = query.Where(c => c.Credits <= maxCredits.Value);
         }
 
-        return await query.Select(c => new CourseReadDto
-        {
-            Id = c.Id,
-            Title = c.Title,
-            Credits = c.Credits,
-            DepartmentId = c.DepartmentId
-        }).ToListAsync();
+        return await query.Select(c => _mapper.Map<CourseReadDto>(c)).ToListAsync();
     }
 }

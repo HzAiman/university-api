@@ -71,11 +71,8 @@ public class StudentsController : ControllerBase
         }
 
         // Project to clean list of course title
-        var schedule = student.Enrollments.Select(e => new
-        {
-            e.Course?.Title,
-            e.EnrollmentDate
-        });
+        var schedule = student.Enrollments.Select(e => _mapper.Map<CourseReadDto>(e.Course));
+
 
         return Ok(new { student.Name, Courses = schedule});
     }
